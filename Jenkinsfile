@@ -12,14 +12,19 @@ pipeline {
     stages {
         stage('Clone Repo') {
             steps {
-                git branch: 'master', url: 'https://github.com/evatra06/mon-projet.git'
-
+                script {
+                    // Utilisation de la branche 'main' pour récupérer le code
+                    git branch: 'main', url: 'https://github.com/evatra06/mon-projet.git'
+                    // Vérification du statut du dépôt après le clone
+                    sh 'git status'
+                }
             }
         }
 
         stage('Build') {
             steps {
                 script {
+                    // Construction de l'image Docker
                     bat 'docker build -t sum-app .'
                 }
             }
@@ -28,8 +33,9 @@ pipeline {
         stage('Run') {
             steps {
                 script {
+                    // Lancement du conteneur Docker et récupération de son ID
                     def output = bat(script: 'docker run -dit sum-app', returnStdout: true).trim()
-                    env.CONTAINER_ID = output.tokenize().last() // Récupérer l'ID du conteneur
+                    env.CONTAINER_ID = output // Le conteneur ID est directement récupéré ici
                     echo "Container ID: ${env.CONTAINER_ID}"
                 }
             }
@@ -51,6 +57,7 @@ pipeline {
                         def arg2 = vars[1]
                         def expectedSum = vars[2].toFloat()
 
+                        // Exécution du test dans le conteneur Docker
                         def output = bat(script: "docker exec ${env.CONTAINER_ID} python /app/sum.py ${arg1} ${arg2}", returnStdout: true).trim()
                         def result = output.toFloat()
 
@@ -67,14 +74,10 @@ pipeline {
         stage('Deploy') {
             steps {
                 script {
+                    // Connexion à DockerHub et déploiement de l'image
                     withCredentials([string(credentialsId: 'dockerhub-password', variable: 'DOCKER_PASSWORD')]) {
-                        // Connexion à DockerHub
                         bat "echo %DOCKER_PASSWORD% | docker login -u 'awatraore06' --password-stdin"
-
-                        // Taguer l’image avant de l'envoyer
                         bat "docker tag sum-app ${DOCKER_IMAGE}"
-
-                        // Pousser l’image sur DockerHub
                         bat "docker push ${DOCKER_IMAGE}"
                     }
                 }
