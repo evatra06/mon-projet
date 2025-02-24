@@ -14,7 +14,7 @@ pipeline {
             steps {
                 script {
                     // Utilisation de la branche 'main' pour récupérer le code
-                    git branch: 'main', url: 'https://github.com/evatra06/mon-projet.git'
+                    git branch: 'master', url: 'https://github.com/evatra06/mon-projet.git'
                     // Vérification du statut du dépôt après le clone
                     sh 'git status'
                 }
