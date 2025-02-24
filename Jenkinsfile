@@ -12,7 +12,7 @@ pipeline {
         stage('Build') {
             steps {
                 script {
-                    sh 'docker build -t sum-app .'
+                    bat 'docker build -t sum-app .'
                 }
             }
         }
@@ -54,15 +54,16 @@ pipeline {
             steps {
                 script {
                     // Connexion à DockerHub
-                    sh "docker login -u 'awatraore06' -p 'tonken Docker'"
+                    bat "docker login -u 'awatraore06' -p 'tonken Docker'"
 
                     // Taguer l’image avant de l'envoyer
-                    sh "docker tag sum-app awatraore06/sum-app:latest"
+                    bat "docker tag sum-app awatraore06/sum-app:latest"
 
                     // Pousser l’image sur DockerHub
-                    sh "docker push awatraore06/sum-app:latest"
+                    bat "docker push awatraore06/sum-app:latest"
                 }
             }
         }
     } // <== Ajout de cette accolade pour fermer "stages"
 } // <== Ajout de cette accolade pour fermer "pipeline"
+gi
