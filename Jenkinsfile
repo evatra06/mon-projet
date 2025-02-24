@@ -25,7 +25,7 @@ pipeline {
             steps {
                 script {
                     // Construction de l'image Docker
-                    bat 'docker build -t sum-app .'
+                    sh 'docker build -t sum-app .'
                 }
             }
         }
@@ -58,7 +58,7 @@ pipeline {
                         def expectedSum = vars[2].toFloat()
 
                         // Exécution du test dans le conteneur Docker
-                        def output = bat(script: "docker exec ${env.CONTAINER_ID} python /app/sum.py ${arg1} ${arg2}", returnStdout: true).trim()
+                        def output = sh(script: "docker exec ${env.CONTAINER_ID} python /app/sum.py ${arg1} ${arg2}", returnStdout: true).trim()
                         def result = output.toFloat()
 
                         if (result == expectedSum) {
@@ -76,9 +76,9 @@ pipeline {
                 script {
                     // Connexion à DockerHub et déploiement de l'image
                     withCredentials([string(credentialsId: 'dockerhub-password', variable: 'DOCKER_PASSWORD')]) {
-                        bat "echo %DOCKER_PASSWORD% | docker login -u 'awatraore06' --password-stdin"
-                        bat "docker tag sum-app ${DOCKER_IMAGE}"
-                        bat "docker push ${DOCKER_IMAGE}"
+                        sh "echo %DOCKER_PASSWORD% | docker login -u 'awatraore06' --password-stdin"
+                        sh "docker tag sum-app ${DOCKER_IMAGE}"
+                         "docker push ${DOCKER_IMAGE}"
                     }
                 }
             }
