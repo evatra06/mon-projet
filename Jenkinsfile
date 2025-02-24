@@ -12,7 +12,8 @@ pipeline {
     stages {
         stage('Clone Repo') {
             steps {
-                git branch: 'main', url: 'https://github.com/evatra06/mon-projet.git'
+                git branch: 'master', url: 'https://github.com/evatra06/mon-projet.git'
+
             }
         }
 
